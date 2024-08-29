@@ -18,6 +18,7 @@ Hinode is:
 Feel free to move files around and create your directory structure, but for the sake of simplicity:
 - controllers - API endpoints
 - db - schema, adapter, and migrations
+- middleware - middleware functions
 - utils - one file utilities
 
 ## How to run

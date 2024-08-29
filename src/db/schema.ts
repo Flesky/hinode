@@ -18,7 +18,8 @@ export const sessions = sqliteTable('sessions', {
 // App schema
 
 export const posts = sqliteTable('posts', {
-  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  id: integer('id').primaryKey({ autoIncrement: true }),
   content: text('content').notNull(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 })

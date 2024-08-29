@@ -2,9 +2,9 @@ import { createMiddleware } from 'hono/factory'
 import { getCookie } from 'hono/cookie'
 import { HTTPException } from 'hono/http-exception'
 import type { Session, User } from 'lucia'
-import { lucia } from './auth'
+import { lucia } from '../utils/auth'
 
-export const authMiddleware = createMiddleware<{
+export const auth = createMiddleware<{
   Variables: {
     user: User
     session: Session
@@ -18,7 +18,7 @@ export const authMiddleware = createMiddleware<{
   const { session, user } = await lucia.validateSession(sessionId)
   if (!session) {
     c.header('Set-Cookie', lucia.createBlankSessionCookie().serialize(), { append: true })
-    throw new HTTPException(401, { message: 'Session expired' })
+    throw new HTTPException(401, { message: 'Invalid session' })
   }
   else if (session.fresh) {
     c.header('Set-Cookie', lucia.createSessionCookie(session.id).serialize(), { append: true })

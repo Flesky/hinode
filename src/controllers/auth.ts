@@ -1,14 +1,14 @@
 import { object, string } from 'zod'
-import { zValidator } from '@hono/zod-validator'
 import { Argon2id } from 'oslo/password'
 import { generateId } from 'lucia'
 import { eq } from 'drizzle-orm/sql/expressions/conditions'
 import { deleteCookie } from 'hono/cookie'
+import { zValidator } from '@hono/zod-validator'
 import { db } from '../db'
 import { users } from '../db/schema'
 import { lucia } from '../utils/auth'
 import { createApp } from '../app'
-import { authMiddleware } from '../utils/middleware'
+import { auth } from '../middleware/auth'
 
 const authSchema = object({
   email: string().email('Invalid email address'),
@@ -51,14 +51,16 @@ app.post('login', zValidator('form', authSchema, (result, c) => {
   return c.json({ message: 'Successfully logged in' })
 })
 
-app.post('logout', authMiddleware, async (c) => {
-  await lucia.invalidateSession(c.get('session').id)
-  deleteCookie(c, lucia.sessionCookieName)
-  return c.json({ message: 'Successfully logged out' })
-})
+app.use(auth)
 
-app.get('me', authMiddleware, async (c) => {
-  return c.json(c.get('user'))
-})
+  .post('logout', async (c) => {
+    await lucia.invalidateSession(c.get('session').id)
+    deleteCookie(c, lucia.sessionCookieName)
+    return c.json({ message: 'Successfully logged out' })
+  })
+
+  .get('me', async (c) => {
+    return c.json(c.get('user'))
+  })
 
 export default app
