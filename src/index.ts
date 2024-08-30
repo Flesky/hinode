@@ -23,12 +23,15 @@ app.onError((err, c) => {
 app.use(async (c, next) => {
   await next()
 
-  if (c.res.status === 404) {
-    return
+  switch (c.res.status) {
+    case 400: {
+      const res = await c.res.json()
+      if (res.error?.name === 'ZodError') {
+        throw new ZodError(res.error.issues)
+      }
+      break
+    }
   }
-  const res = await c.res?.json()
-  if ('error' in res && 'name' in res.error && res.error?.name === 'ZodError')
-    throw new ZodError(res.error.issues)
 })
 
 app.route('', controllers)
