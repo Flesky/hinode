@@ -1,20 +1,20 @@
 import { eq } from 'drizzle-orm/sql/expressions/conditions'
 import { createInsertSchema } from 'drizzle-zod'
-import { number, object, string } from 'zod'
+import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator'
 import { db } from '../db'
 import { posts } from '../db/schema'
 import { createApp } from '../app'
 import { auth } from '../middleware/auth'
 
-const selectSchema = object({
-  id: string().transform(id => Number(id)).pipe(number().min(1)),
+const selectSchema = z.object({
+  id: z.string().transform(id => Number(id)).pipe(z.number().min(1)),
 })
 
 const postSchema = createInsertSchema(posts).omit({
   userId: true,
 }).extend({
-  content: string().min(1, 'Content is required').max(1000, 'Content is too long'),
+  content: z.string().min(1, 'Content is required').max(1000, 'Content is too long'),
 })
 
 const app = createApp()

@@ -1,4 +1,4 @@
-import { object, string } from 'zod'
+import { z } from 'zod'
 import { Argon2id } from 'oslo/password'
 import { generateId } from 'lucia'
 import { eq } from 'drizzle-orm/sql/expressions/conditions'
@@ -10,9 +10,9 @@ import { lucia } from '../utils/auth'
 import { createApp } from '../app'
 import { auth } from '../middleware/auth'
 
-const authSchema = object({
-  email: string().email('Invalid email address'),
-  password: string().min(8, 'Password must be at least 8 characters'),
+const authSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
 const app = createApp()
