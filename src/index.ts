@@ -2,10 +2,9 @@ import { serve } from '@hono/node-server'
 import { showRoutes } from 'hono/dev'
 import { ZodError } from 'zod'
 import { HTTPException } from 'hono/http-exception'
-import auth from './controllers/auth'
-import posts from './controllers/posts'
 import 'dotenv/config'
 import { createApp } from './app'
+import controllers from './controllers'
 
 const app = createApp()
 
@@ -32,8 +31,7 @@ app.use(async (c, next) => {
     throw new ZodError(res.error.issues)
 })
 
-app.route('/auth', auth)
-app.route('/posts', posts)
+app.route('', controllers)
 
 const port = 3000
 console.log(`Server is running on port ${port}. Available routes:`)
